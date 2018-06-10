@@ -1,0 +1,13 @@
+#board div {
+    float: left;
+    margin: 0 10px 10px 0;
+    background-color: lightgray;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+}
+
+h4 {
+    clear: both;
+}
