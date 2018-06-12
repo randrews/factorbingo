@@ -2,8 +2,8 @@ class Game {
     constructor() {
         this.deck = [];
         this.board = [];
-        this.scores = {2: 0};
-        this.message = null;
+        this.scores = {};
+        this.messages = [];
 
         const sorted = [];
         for(let n=0; n<40; n++) {
@@ -47,37 +47,59 @@ class Game {
             [0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15],
         ];
 
-        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
-
-        const message = [];
+        this.messages = [];
 
         lines.forEach((line) => {
             if(this.filled(line)) {
                 toDel = toDel.concat(line);
-                let sum = 0;
-                line.forEach(i => sum += this.board[i]);
-                primes.forEach((d) => {
-                    const s = this.countFactors(sum, d);
-                    if(s > 0) {
-                        message.push({ factor: d, points: s });
-                        if(this.scores[d] == null) this.scores[d] = 0;
-                        this.scores[d] += s;
-                    }
-                });
+                this.score(line);
             }
         });
 
+
+        const message = [];
         this.writeMessage(message);
         toDel.forEach(i => this.board[i] = null);
     }
 
-    countFactors(n, d) {
-        let c = 0;
-        while(n % d == 0) {
-            c++;
-            n /= d;
+    score(line) {
+        let sum = 0;
+        const addends = [];
+        line.forEach( i => {
+            sum += this.board[i]
+            addends.push(this.board[i]);
+        });
+
+        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
+
+        const divisors = [];
+        primes.forEach(p => {
+            if(sum % p == 0 && sum >= p) {
+                divisors.push(p);
+                if(this.scores[p] == null) this.scores[p] = 1;
+                else this.scores[p]++;
+            }
+        });
+
+        this.messages.push(`Scored ${addends.join('+')} = ${sum}, divisible by ${this.toSentence(divisors)}`);
+    }
+
+    toSentence(arr) {
+        if(arr.length == 0)
+            return '';
+        else if(arr.length == 1)
+            return arr[0];
+        else if(arr.length == 2)
+            return `${arr[0]} and ${arr[1]}`;
+        else {
+            let str = '';
+            for(let n = 0; n < arr.length - 1; n++) {
+                str += `${arr[n]}, `;
+            }
+            str += `and ${arr[arr.length-1]}`;
+
+            return str;
         }
-        return c;
     }
 
     filled(cells) {
@@ -87,7 +109,8 @@ class Game {
     totalScore() {
         const scores = [];
         for(var k in this.scores) scores.push(this.scores[k]);
-        return Math.min.apply(null, scores);
+        if(scores.length == 0) return 0;
+        else return Math.min.apply(null, scores);
     }
 
     writeMessage(points) {

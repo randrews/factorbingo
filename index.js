@@ -45,7 +45,7 @@ function display(game) {
     find('next-number').textContent = game.deck[0];
     find('total-score').textContent = game.totalScore();
     find('moves-left').textContent = game.deck.length;
-    find('message').textContent = game.message;
+    find('message').textContent = game.messages.join("\n");
 
     for(var n=0; n<16; n++) {
         find(`cell-${n}`).textContent = (game.board[n] == null ? '-' : game.board[n]);
