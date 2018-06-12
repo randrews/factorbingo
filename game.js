@@ -107,10 +107,16 @@ class Game {
     }
 
     totalScore() {
-        const scores = [];
-        for(var k in this.scores) scores.push(this.scores[k]);
-        if(scores.length == 0) return 0;
-        else return Math.min.apply(null, scores);
+        const factors = [];
+        for(var k in this.scores) {
+            factors.push(k);
+        }
+        if(factors.length == 0)
+            return '0';
+        else {
+            const topFactor = Math.max.apply(null, factors);
+            return `${topFactor} * ${this.scores[topFactor]} = ${topFactor * this.scores[topFactor]}`;
+        }
     }
 
     writeMessage(points) {
