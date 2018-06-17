@@ -36,11 +36,23 @@ function createScore(factor) {
     return span;
 }
 
-function display(game) {
-    for(var d in game.scores) {
-        const span = find(`score-${d}`) || createScore(d);
-        span.textContent = game.scores[d];
+function syncScores(scores) {
+    let keys = [];
+    for(var d in scores) {
+        keys.push(d);
     }
+    const maxFactor = Math.max.apply(null, keys);
+
+    const mapping = d3.select('#score-container').selectAll('div').data(keys);
+    mapping.enter().append('div');
+    mapping.exit().remove();
+    d3.select('#score-container').selectAll('div').data(keys)
+        .text(s => `${s}s: ${scores[s]}`)
+        .style('text-decoration', s => (s == maxFactor ? '' : 'line-through'));
+}
+
+function display(game) {
+    syncScores(game.scores);
 
     find('next-number').textContent = game.deck[0];
     find('total-score').textContent = game.totalScore();
